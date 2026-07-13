@@ -1,3 +1,13 @@
+---
+title: AI Weather Map
+emoji: 🌍⛈️
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+app_file: app.py
+pinned: false
+---
+
 # AI Weather Map 🌍⛈️
 
 An async-first Python web application for real-time worldwide weather ingestion, geo-spatial indexing (using H3 grids), path-based route risk scoring, and interactive map visualisations.
