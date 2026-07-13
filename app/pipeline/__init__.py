@@ -1,0 +1,1 @@
+"""Pipeline components for weather ingestion and detection."""
