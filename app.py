@@ -27,11 +27,14 @@ try:
     # Compile the Gradio FastAPI application instance
     demo.app = routes.App.create_app(demo)
     
+    # Unregister Gradio's default root "/" index handler.
+    # This allows our custom FastAPI weather map homepage to be served at "/" instead of the Gradio GUI.
+    demo.app.routes = [r for r in demo.app.routes if r.path != "/"]
+    
     # Mount our FastAPI weather map application on the root "/" path
     demo.app.mount("/", fastapi_app)
     
-    # Launch the Gradio app. Gradio handles port binding, health check routing,
-    # and registry with the Hugging Face supervisor automatically.
+    # Launch the Gradio app. Gradio handles port binding and supervisor registration.
     demo.launch()
 except ImportError:
     print("Gradio not installed, running pure FastAPI server with uvicorn.")
