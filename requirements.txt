@@ -3,4 +3,4 @@ pydantic>=2.9.0
 pydantic-settings>=2.3.4
 h3==3.7.7
 uvicorn[standard]
-firebase-functions>=2.0.0
+firebase-functions>=0.6.0
