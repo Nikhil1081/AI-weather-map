@@ -1,5 +1,7 @@
 import os
 from app.main import app as fastapi_app
+from app.main import root as serve_root
+from starlette.routing import Route
 
 # 1. ZeroGPU function definition linked to Gradio event listener
 try:
@@ -27,13 +29,14 @@ try:
     # Compile the Gradio FastAPI application instance
     demo.app = routes.App.create_app(demo)
     
-    # Unregister Gradio's default root "/" index handler in-place to bypass read-only property constraint
-    filtered_routes = [r for r in demo.app.routes if getattr(r, "path", None) != "/"]
-    demo.app.routes.clear()
-    demo.app.routes.extend(filtered_routes)
-    
-    # Mount our FastAPI weather map application on the root "/" path
+    # Mount our FastAPI weather map application on the root "/" path (handles API endpoints /v1/*)
     demo.app.mount("/", fastapi_app)
+    
+    # Create a specific route for the root "/" path that points directly to our HTML home page,
+    # and insert it at the very beginning (index 0) of the router. This forces Starlette to serve
+    # our Leaflet Weather Map homepage instead of Gradio's index page.
+    homepage_route = Route("/", endpoint=serve_root, methods=["GET"])
+    demo.app.routes.insert(0, homepage_route)
     
     # Launch the Gradio app. Gradio handles port binding and supervisor registration.
     demo.launch()
