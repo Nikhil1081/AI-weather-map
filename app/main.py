@@ -4,7 +4,7 @@ import asyncio
 import json
 import re
 from dataclasses import asdict
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import AsyncIterator
 from urllib.error import URLError
 from urllib.parse import urlencode
@@ -419,7 +419,7 @@ def geocode_location(query: str) -> dict[str, object] | None:
 
 
 def infer_weather_context(latitude: float, longitude: float) -> tuple[str, str, float]:
-    current_month = datetime.now(tz=UTC).month
+    current_month = datetime.now(tz=timezone.utc).month
     absolute_latitude = abs(latitude)
 
     if absolute_latitude <= 23.5:
@@ -545,7 +545,7 @@ async def stream_geojson() -> AsyncIterator[str]:
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok", "timestamp": datetime.now(tz=UTC).isoformat()}
+    return {"status": "ok", "timestamp": datetime.now(tz=timezone.utc).isoformat()}
 
 
 @app.get(f"{settings.api_prefix}/weather/stream")

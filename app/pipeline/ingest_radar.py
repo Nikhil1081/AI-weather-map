@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -18,7 +18,7 @@ async def fetch_latest_radar_frame(source: str = "noaa") -> RadarFrame:
     """Return a placeholder frame until the upstream data connector is wired in."""
 
     return RadarFrame(
-        captured_at=datetime.now(tz=UTC),
+        captured_at=datetime.now(tz=timezone.utc),
         source=source,
         payload={"status": "pending-ingestion", "source": source},
     )
