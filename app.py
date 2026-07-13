@@ -27,9 +27,10 @@ try:
     # Compile the Gradio FastAPI application instance
     demo.app = routes.App.create_app(demo)
     
-    # Unregister Gradio's default root "/" index handler.
-    # This allows our custom FastAPI weather map homepage to be served at "/" instead of the Gradio GUI.
-    demo.app.routes = [r for r in demo.app.routes if getattr(r, "path", None) != "/"]
+    # Unregister Gradio's default root "/" index handler in-place to bypass read-only property constraint
+    filtered_routes = [r for r in demo.app.routes if getattr(r, "path", None) != "/"]
+    demo.app.routes.clear()
+    demo.app.routes.extend(filtered_routes)
     
     # Mount our FastAPI weather map application on the root "/" path
     demo.app.mount("/", fastapi_app)
