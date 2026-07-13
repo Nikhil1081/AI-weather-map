@@ -1,4 +1,5 @@
 import os
+import time
 from app.main import app as fastapi_app
 from app.main import root as serve_root
 from starlette.routing import Route
@@ -26,20 +27,23 @@ try:
         btn = gr.Button("Verify GPU Connection")
         btn.click(fn=dummy_gpu_func, inputs=inp, outputs=out)
     
-    # Compile the Gradio FastAPI application instance
-    demo.app = routes.App.create_app(demo)
+    # Launch the Gradio app in the background (preventing main thread lock).
+    # Gradio will compile demo.app and start the uvicorn web server.
+    demo.launch(prevent_thread_lock=True)
     
-    # Mount our FastAPI weather map application on the root "/" path (handles API endpoints /v1/*)
+    # Once the server is running, inject our FastAPI routes into the active FastAPI instance.
+    # Starlette routes are resolved dynamically, so updates to demo.app.routes take effect immediately!
     demo.app.mount("/", fastapi_app)
     
-    # Create a specific route for the root "/" path that points directly to our HTML home page,
-    # and insert it at the very beginning (index 0) of the router. This forces Starlette to serve
-    # our Leaflet Weather Map homepage instead of Gradio's index page.
+    # Prepend the root route handler at index 0 to override Gradio's default index page.
     homepage_route = Route("/", endpoint=serve_root, methods=["GET"])
     demo.app.routes.insert(0, homepage_route)
     
-    # Launch the Gradio app. Gradio handles port binding and supervisor registration.
-    demo.launch()
+    print("FastAPI routes successfully injected into the running Gradio server!")
+    
+    # Keep the main thread alive since Gradio was started in the background
+    while True:
+        time.sleep(3600)
 except ImportError:
     print("Gradio not installed, running pure FastAPI server with uvicorn.")
     import uvicorn
