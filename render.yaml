@@ -7,3 +7,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.4
+      - key: AI_WEATHER_WEATHER_API_KEY
+        sync: false
